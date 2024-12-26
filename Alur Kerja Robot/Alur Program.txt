@@ -1,0 +1,49 @@
+1. INISIALISASI SISTEM
+   * Gazebo Dimulai: Setelah meluncurkan file launch, simulasi Gazebo dimulai, dan dunia simulasi yang berisi robot diatur 
+     dengan baik
+   * Robot State Publisher: Menyebarkan status robot berdasarkan file URDF yang mendeskripsikan bentuk fisik robot, termasuk 
+     posisi dan orientasi dari berbagai bagian robot seperti roda dan tubuh (silinder)
+   * Joint State Publisher: Menyediakan antarmuka grafis (GUI) untuk mengubah posisi joint robot secara manual, berguna untuk 
+     eksperimen dan debugging
+
+2. PEMROSESAN GAMBAR DARI KAMERA
+   * Kamera Simulasi: Dalam dunia Gazebo, kamera di robot mulai mengambil gambar dari dunia sekitar 
+     (misalnya, lantai dengan garis persegi merah yang harus diikuti)
+   * Publikasi Gambar: Kamera mengirimkan gambar yang diambil ke topik ROS (misalnya, /camera/image_raw), yang dapat diakses 
+     oleh node lain, seperti line_following_node
+
+3. PENGOLAHAN GAMBAR OLEH line_following_node
+   * Menerima Gambar: line_following_node menerima gambar dari topik /camera/image_raw
+   * Konversi Gambar: Gambar dari kamera diubah menjadi citra grayscale untuk memudahkan pemrosesan
+   * Binarisasi Gambar: Citra grayscale diubah menjadi citra biner menggunakan thresholding, di mana garis yang akan diikuti 
+     menjadi putih dan latar belakang menjadi hitam
+   * Deteksi Garis: Dengan menggunakan metode seperti momen (moments) atau deteksi tepi (edge detection), node akan mencari 
+     posisi garis yang akan diikuti
+     -  Jika garis terdeteksi, node menghitung posisi garis relatif terhadap pusat kamera (error).
+     -  Jika garis tidak terdeteksi, node akan mengaktifkan mode pencarian garis
+
+4. PENGENDALIAN GERAKAN ROBOT
+   * Menghitung Error: Node menghitung error berdasarkan posisi garis relatif terhadap pusat gambar 
+     (misalnya, jarak antara posisi garis dan pusat gambar)
+   * Perhitungan Kecepatan :
+     -  Kecepatan linear robot ditetapkan agar tetap maju (misalnya, 0.2 m/s)
+     -  Kecepatan sudut dihitung berdasarkan error: jika garis berada di kiri atau kanan, robot akan berputar untuk 
+        mengoreksi arah dan mengikuti garis. Perhitungan ini mengatur arah robot untuk mengikuti garis
+   * Perintah Kecepatan: Node mempublikasikan perintah kecepatan robot ke topik /cmd_vel, yang menginstruksikan robot 
+     untuk bergerak maju atau berputar
+
+5. GERAKAN ROBOT DI DUNIA SIMULASI
+   * Eksekusi Perintah Kecepatan: ROS 2 mengirimkan perintah kecepatan (linear dan angular) ke robot hardware di simulasi
+   * Gerakan Robot: Berdasarkan perintah kecepatan, robot bergerak di dunia simulasi untuk mengikuti garis
+     -  Jika garis terdeteksi dengan benar, robot akan tetap berada di jalur
+     -  Jika garis hilang, robot akan mencoba mencari garis atau berhent
+
+6. INTERAKSI DENGAN GUI DAN MANUAL CONTROL
+   * GUI Joint State Publisher: Anda bisa mengubah posisi joint robot secara manual melalui GUI yang disediakan oleh 
+     joint_state_publisher_gui jika dibutuhkan untuk eksperimen atau debugging
+   * Visualisasi Data: Anda dapat memonitor jalannya simulasi dan status robot melalui output di terminal atau 
+     dengan melihat robot di dunia simulasi Gazebo
+
+7. PENGHENTIAN SISTEM
+   * Simulasi dapat dihentikan kapan saja dengan Ctrl+C di terminal atau melalui antarmuka ROS untuk menghentikan node
+   
