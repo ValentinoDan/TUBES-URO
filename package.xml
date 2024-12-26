@@ -1,0 +1,20 @@
+<package format="3">
+  <name>line_following</name>
+  <version>0.0.0</version>
+  <description>ROS2 package for simple line following using OpenCV</description>
+  <maintainer email="danielkusumo550@gmail.com">Daniel</maintainer>
+  <license>License</license>
+
+  <dependencies>
+    <build_depend>ament_python</build_depend>
+    <build_depend>rclpy</build_depend>
+    <build_depend>sensor_msgs</build_depend>
+    <build_depend>cv_bridge</build_depend>
+    <build_depend>opencv-python</build_depend>
+
+    <exec_depend>rclpy</exec_depend>
+    <exec_depend>sensor_msgs</exec_depend>
+    <exec_depend>cv_bridge</exec_depend>
+    <exec_depend>opencv-python</exec_depend>
+  </dependencies>
+</package>
